@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
+echo root:${STORMAN_PASS} | chpasswd
 /etc/init.d/stor_redfishserver start && /etc/init.d/stor_tomcat start
