@@ -36,6 +36,15 @@ docker run
 docker run -h storman-docker --privileged --name storman -p 8443:8443/tcp xtekllc/storman:latest
 ```
 
+arcconf tool
+```bash
+# Command help
+docker exec -it storman arcconf help
+
+# List controllers
+docker exec -it storman arcconf list
+```
+
 ## ENV Var (See .env for info)
 ```bash
 
