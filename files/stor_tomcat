@@ -1,0 +1,121 @@
+#!/bin/bash
+#chkconfig: 35 99 99
+# description: stor_tomcat
+# MPD, 21/12/2011'
+### BEGIN INIT INFO
+# Provides: stor_tomcat
+# Required-Start: $local_fs $network $ALL
+# X-UnitedLinux-Should-Start:
+# Required-Stop: $local_fs $network
+# X-UnitedLinux-Should-Stop:'
+# Default-Start: 2 3 4 5 6
+# Default-Stop: 0 1 6
+# Short-Description: Tomcat Server
+# Description: Start/Stop/Restart stor_tomcat
+### END INIT INFO
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/StorMan/apache-tomcat/webapps/maxview/WEB-INF/lib 
+pidTomcat=`ps -eaf|grep "org.apache.catalina.startup.Bootstrap"|grep -v grep| awk '{print $2}'`
+
+if [ -f /etc/redhat-release ] ; then
+        v1=`cat /etc/redhat-release | cut -f1 -d " "`
+        v2=`cat /etc/redhat-release | cut -f2 -d " "`
+        Linux=$v1$v2
+else
+        if [ -f /etc/SuSE-release ] ; then
+                Linux=`cat /etc/SuSE-release | grep SUSE | cut -f1 -d " "`
+        fi
+fi
+
+if [ "$Linux" == "RedHat" ] ; then
+	#!/bin/bash
+	#
+	# Startup script for stor_cimserver
+	#
+	# chkconfig: 23456 98 01
+	# description: stor_cimserver
+
+	# Source function library.
+	. /etc/rc.d/init.d/functions
+
+	# Source networking configuration.
+	. /etc/sysconfig/network
+
+	# Check that networking is up.
+	[ "${NETWORKING}" = "no" ] && exit 0
+else
+	if [ "$Linux" == "SUSE" -o "$Linux" == "openSUSE" ] ; then
+		#
+		# Startup script for stor_cimserver
+		#
+		#
+		# description: stor_cimserver
+
+		# Source function library.
+		. /etc/rc.status
+		rc_reset
+	fi
+fi
+
+INST_PATH=/usr/StorMan
+tomcat=$INST_PATH/apache-tomcat
+startup=$tomcat/bin/startup.sh
+shutdown=$tomcat/bin/shutdown.sh
+export JAVA_HOME=$INST_PATH/jre
+GREEN_COLOR='\033[92m'
+RED_COLOUR='\033[91m'
+RESET_COLOUR='\033[0m'
+WEBSERVER_NAME="maxView Storage Manager WebServer"
+
+return_status() {
+    if [ ! -z "$pidTomcat" ] ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+start() {
+  echo -n "Starting $WEBSERVER_NAME      "
+  cd /usr/StorMan/apache-tomcat/bin
+  sh startup.sh > /dev/null 2>&1
+ #$startup
+  sleep 5
+  echo -e "[ ${GREEN_COLOR}OK${RESET_COLOUR} ]"	
+}
+
+stop() {
+  echo -n "Stopping $WEBSERVER_NAME      "
+  kill -15 $pidTomcat > /dev/null 2>&1
+  #$shutdown
+  sleep 5
+  echo -e "[ ${GREEN_COLOR}OK${RESET_COLOUR} ]"
+}
+                                                                
+case "$1" in
+  start)
+      start
+  ;;
+  stop)
+      stop
+  ;;
+  status)
+    return_status
+    RETVAL=$?
+    if [ $RETVAL -eq 1 ] ; then
+        echo "$WEBSERVER_NAME is NOT running"
+    else
+        echo "$WEBSERVER_NAME is running"
+    fi
+    ;;
+  restart|reload)
+      stop
+      sleep 10
+      start
+  ;;
+  *)
+      echo $"Usage: $0 {start|stop|restart|status}"
+      exit 1
+  esac
+exit 0
+

@@ -1,0 +1,21 @@
+networks:
+  stor_net:
+    driver: bridge
+volumes:
+  stor-data:
+
+services:
+
+  storman:
+    env_file: .env
+    image: xtekllc/storman:latest
+    container_name: storman
+    hostname: storman-docker
+    privileged: true
+    restart: unless-stopped
+    ports:
+      - 8443:8443/tcp
+    networks:
+      - stor_net
+    volumes:
+      - stor-data:/usr/StorMan
