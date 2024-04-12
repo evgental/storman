@@ -54,3 +54,9 @@ docker exec -it storman arcconf list
 STORMAN_PASS
 ```
 
+## Tested with the following controllers:
+
+```
+Adaptec 6805t
+Adaptec 8405
+```
